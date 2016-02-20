@@ -5,7 +5,8 @@ A solution to manage hierarchical relationships.
 ## Description
 
 This Plugin provides a solution to manage hierarchical relationships of the type belongsTo-HasMany:
-In example: A **Category** has a **Parent Category** and Many **Childs Categories**.
+* Example 1: A **Category** has a **Parent Category** and Many **Childs Categories**.
+* Example 2: An **Item** belongs to a **Category** and a **Category** has many **Items**.
 
 ## Contents of the plugin
 
