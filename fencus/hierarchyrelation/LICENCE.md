@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 
-Copyright (c) 2016, Elias M. Mariani
+Copyright (c) 2016, Elias M. Mariani and Ariel M. Carrettoni.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
