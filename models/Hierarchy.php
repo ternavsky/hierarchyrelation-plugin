@@ -24,6 +24,18 @@ class Hierarchy extends Model
 		}
 	}
 	
+	public function beforeDelete()
+	{
+		if($this->{$this->relationDown})
+		{
+			foreach($this->{$this->relationDown} as $child)
+			{
+				$child->{$this->relationUp} = $this->{$this->relationUp};
+				$child->save();
+			}
+		}
+	}
+	
 	protected function getBranchOfChild($model)
 	{
 		foreach($this->{$this->relationDown} as $child)
