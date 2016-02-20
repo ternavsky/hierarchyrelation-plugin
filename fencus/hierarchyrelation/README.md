@@ -4,8 +4,8 @@ A solution to manage hierarchical relationships.
 
 ## Description
 
-This Plugin provides a solution to manage hierarchical relationships of the type belongsTo-HasMany:
-* Example 1: A **Category** has a **Parent Category** and Many **Childs Categories**.
+This plugin provides a solution to manage hierarchical relationships of the type belongsTo-HasMany:
+* Example 1: A **Category** has a **Parent Category** and many **Childs Categories**.
 * Example 2: An **Item** belongs to a **Category** and a **Category** has many **Items**.
 
 ## Contents of the plugin
@@ -83,7 +83,7 @@ You must define the variables `$relationUp` and `$relationDown` to match the nam
 * `$relationUp` defaults to 'parent'.
 * `$relationDown` defaults to 'childs'.
 
-####for example:
+####For example:
 
 	<?php namespace Acme\Demo\Models;
 	
@@ -108,8 +108,8 @@ You must define the variables `$relationUp` and `$relationDown` to match the nam
     		];
 	}
 	
-### Why should we use it ?
-Lets asume the next case:
+### Why should we use it?
+Let's assume the next case:
 
 	```
 	-> Grandfather
