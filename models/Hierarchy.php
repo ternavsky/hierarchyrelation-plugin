@@ -9,21 +9,21 @@ class Hierarchy extends Model
 {
 
 	public $relationUp = 'parent';
-	public $relationDown = 'childs';
-	
+	public $relationDown = 'children';
+
 	public function beforeSave()
 	{
-		if($this->{$this->relationUp})
+		if ($this->{$this->relationUp})
 		{
 			$branch = $this->getBranchOfChild($this->{$this->relationUp});
 			if($branch)
 			{
-				$branch->{$this->relationUp} = $this::find($this->id)->{$this->relationUp};
-				$branch->save();
+				$branch->makeChildOf($this::find($this->id)->{$this->relationUp});
+				$this->reload();
 			}
 		}
 	}
-	
+
 	public function beforeDelete()
 	{
 		if($this->{$this->relationDown})
@@ -35,7 +35,7 @@ class Hierarchy extends Model
 			}
 		}
 	}
-	
+
 	protected function getBranchOfChild($model)
 	{
 		foreach($this->{$this->relationDown} as $child)
@@ -55,7 +55,7 @@ class Hierarchy extends Model
 		}
 		return null;
 	}
-	
+
 	protected function getIfChild($model,$find)
 	{
 		$childFound = null;
