@@ -6,21 +6,26 @@ use Lang;
 
 class HierarchyRelation extends FormWidgetBase
 {
+	use \Backend\Traits\FormModelWidget;
+
 	public $allowChilds = true;
 	public $allowNull = true;
 	public $showSelf = true;
 	public $nullString = '--None--';
 	public $nameFrom = 'name';
 	public $relationUp = 'parent';
-	public $relationDown = 'childs';
+	public $relationDown = 'children';
 	public $separator = '-';
 	public $longFormat = false;
-	
+
 	public $optionsList;
 	public $distance;
-	
+
 	protected $defaultAlias = 'hierarchy-relation';
-	
+
+	private $relationValue;
+	private $areSameClass;
+
     public function widgetDetails()
     {
         return [
@@ -28,7 +33,7 @@ class HierarchyRelation extends FormWidgetBase
             'description' => 'fencus.hierarchyrelation::lang.plugin.description'
         ];
     }
-	
+
     public function init()
     {
     	$this->fillFromConfig([
@@ -42,76 +47,74 @@ class HierarchyRelation extends FormWidgetBase
     			'relationDown',
     			'longFormat',
     	]);
-    	
+
     	/*
     	 * Replace '?' characters for whitespaces.
     	 */
     	$this->separator = str_replace('?', ' ', $this->separator);
-    	
+
     	$this->optionsList = array();
     }
-    
-    
+
+
     public function render()
     {
     	/*
     	 * Get array of Options
     	 */
    		$this->setOptionsList();
-   		
+
    		/*
    		 * Add a NULL option to the array.
    		 */
    		if($this->allowNull)
    		{
    			$null = new \stdClass();
-   		
-   			$null->id = 'null';
+
+   			$null->id = '';
    			$null->name = $this->nullString;
    			$null->selected = false;
    			$null->disabled = false;
-   		
+
    			array_unshift($this->optionsList,$null);
    		}
-   		
+
    		/*
    		 * Set variables for the partial.
    		 */
    		$this->vars['name'] = $this->formField->getName();
     	$this->vars['optionsList'] = $this->optionsList;
     	return $this->makePartial('hierarchyrelation');
-    	
+
     }
-    
+
     /**
      * Generates an array of options.
      * @return Options Array
      */
     public function setOptionsList()
     {
-    	$this->modelAttribute = $this->valueFrom;
-    	
     	/*
     	 * Check if the relations exists.
     	 * authors: Alexey Bobkov, Samuel Georges
     	 * extracted from: october/modules/backend/formwidgets/Relation.php
     	 */
-    		
+
     	/*
     	 * Original Relation
     	 */
-    	list($model, $attribute) = $this->resolveModelAttribute($this->modelAttribute);
+    	list($model, $attribute) = $this->resolveModelAttribute($this->valueFrom);
     	if (!$model->hasRelation($attribute)) {
     		throw new ApplicationException(Lang::get('backend::lang.model.missing_relation', [
     				'class' => get_class($model),
     				'relation' => $attribute
     		]));
     	}
-    	
+
     	/*
     	 * Relation Up
     	 */
-    	$relationModel = $this->model->makeRelation($this->modelAttribute);
+    	$relationModel = $this->model->makeRelation($this->valueFrom);
     	$dispose = new $relationModel();
     	if (!$dispose->hasRelation($this->relationUp)) {
     		throw new ApplicationException(Lang::get('backend::lang.model.missing_relation', [
@@ -129,7 +132,7 @@ class HierarchyRelation extends FormWidgetBase
     				'needed' => 'belongsTo'
     		]));
     	}
-    	
+
     	/*
     	 * Relation Down
     	 */
@@ -149,14 +152,14 @@ class HierarchyRelation extends FormWidgetBase
     				'needed' => 'hasMany'
     		]));
     	}
-    	
-        
+
+
         $this->areSameClass = get_class($relationModel) == get_class($this->model);
-    	$this->relationValue = $this->model->{$this->modelAttribute};
-    	$this->distance = 0;
+    	$this->relationValue = $this->model->{$this->valueFrom};
+		$this->distance = 0;
     	$this->getNodes($relationModel::where($this->relationUp.'_id','=',0)->orWhere($this->relationUp.'_id','=',null)->get());
     }
-    
+
     public function getNodes($childs, $append = '')
     {
    		foreach($childs as $child)
@@ -174,12 +177,13 @@ class HierarchyRelation extends FormWidgetBase
    					$option->id = $child->id;
    					$option->name = $append.$shortString.$child->{$this->nameFrom};
    					$option->disabled = true;
+
    					if($this->relationValue != null)
    						$option->selected = $child->id == $this->relationValue->id;
    					else
    						$option->selected = false;
    					array_push($this->optionsList, $option);
-   					
+
    				}
    				if($this->allowChilds)
    				{
@@ -202,7 +206,8 @@ class HierarchyRelation extends FormWidgetBase
    				$option->id = $child->id;
    				$option->name = $append.$shortString.$child->{$this->nameFrom};
    				$option->disabled = false;
-   				if($this->relationValue != null)
+
+				if($this->relationValue != null)
    					$option->selected = $child->id == $this->relationValue->id;
    				else
    					$option->selected = false;
@@ -219,5 +224,5 @@ class HierarchyRelation extends FormWidgetBase
    			}
    		}
     }
-    
+
 }
