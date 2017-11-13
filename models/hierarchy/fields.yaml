@@ -14,7 +14,7 @@ fields:
         allowChilds: true
         showSelf: true
         relationUp: parent
-        relationDown: children
+        relationDown: childs
         nameFrom: id
         separator: ?->?
         longFormat: true
