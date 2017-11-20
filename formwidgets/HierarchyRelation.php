@@ -23,6 +23,7 @@ class HierarchyRelation extends FormWidgetBase
 
 	protected $defaultAlias = 'hierarchy-relation';
 	protected $modelAttribute;
+	protected $relationValue;
 
     public function widgetDetails()
     {
